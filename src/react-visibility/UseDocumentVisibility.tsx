@@ -30,7 +30,7 @@ const useDocumentVisibility = () => {
         document.removeEventListener(visibilityChange, fun);
       };
     };
-    return [isVisible,count,onVisibilityChange];
+  return { isVisible, count, onVisibilityChange};
 };
 
 export default useDocumentVisibility;

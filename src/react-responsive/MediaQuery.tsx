@@ -55,7 +55,6 @@ const MediaQuery:FC<MediaQueryProps> = ({children,minWidth,maxWidth,orientation,
         query,
     });
 
-    console.log(isDesktopOrLaptop);
     useEffect(() => {
     }, [isDesktopOrLaptop]);
 

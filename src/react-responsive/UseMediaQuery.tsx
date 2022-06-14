@@ -18,7 +18,7 @@ const useMediaQuery  = (arg:any) =>{
         return () => {
             mql.removeEventListener('change', screenTest);
         };
-    },[arg.query, mql]);
+    },[arg.query]);
     return isQvery;
 };
 
