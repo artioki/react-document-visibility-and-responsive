@@ -1,10 +1,10 @@
 import { useState,useEffect } from 'react';
-import useDocumentVisibilityType from './UseDocumentVisibilityType';
+import useDocumentVisibilityType from './useDocumentVisibilityType';
 
 const useDocumentVisibility = () => {
-  const [Visible, setIsVisible] = useState(useDocumentVisibilityType.getIsDocumentHidden());
+  const [Visible, setIsVisible] = useState(false);//useDocumentVisibilityType.getIsDocumentHidden()
   const [count, setcount] = useState(0);
-  const [Events, setEvents] = useState<(() => void)[]>([]);
+  const [Callbacks, setCallbacks] = useState<(() => void)[]>([]);
 
   const onVisibilityChangeAll = () => {
     if(useDocumentVisibilityType.getIsDocumentHidden() === false){
@@ -17,7 +17,7 @@ const useDocumentVisibility = () => {
     const visibilityChange = useDocumentVisibilityType.getBrowserVisibilityProp();
     const event = (() => fun(useDocumentVisibilityType.getIsDocumentHidden()));
     document.addEventListener(visibilityChange, event,false);//visibilityChange, fun, false
-    setEvents(state => {
+    setCallbacks(state => {
       state.push(() => document.removeEventListener(visibilityChange, event));
       return state;
     });
@@ -27,11 +27,14 @@ const useDocumentVisibility = () => {
     const visibilityChange = useDocumentVisibilityType.getBrowserVisibilityProp();
     document.addEventListener(visibilityChange, onVisibilityChangeAll,false);//visibilityChange, fun, false
     return () => {
-      Events.forEach(element => {
+      Callbacks.forEach(element => {
         element();
-        setEvents([]);
-        document.removeEventListener(visibilityChange, onVisibilityChangeAll);
       });
+      setCallbacks(state => {
+        state.length = 0;
+        return state;
+      });
+      document.removeEventListener(visibilityChange, onVisibilityChangeAll);
     };
 
   // eslint-disable-next-line react-hooks/exhaustive-deps

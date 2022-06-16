@@ -1,5 +1,5 @@
 import React, { FC, useMemo} from 'react';
-import useMediaQuery from './UseMediaQuery';
+import useMediaQuery from './useMediaQuery';
 
 export function getParam(type:string,value:number|string,form?:string){
     if(typeof value === 'number'){
@@ -16,14 +16,14 @@ export function joinParam(mas:string[]){
 
 }
 
-export interface getQueryProps{
+export interface GetQueryProps{
     minWidth?: `${number}px` | number;
     maxWidth?: `${number}px` | number;
     orientation?: 'portrait'|'landscape';
     minResolution?: `${number}dppx` | number;
     maxResolution?: `${number}dppx` | number;
 }
-function getQuery(arg: getQueryProps) {
+function getQuery(arg: GetQueryProps) {
     const mas: string[] = [];
 
     if(typeof arg.minWidth !== 'undefined'){
@@ -36,25 +36,20 @@ function getQuery(arg: getQueryProps) {
         mas.push(getParam('orientation',arg.orientation));
     }
     if(typeof arg.minResolution !== 'undefined'){
-        mas.push(getParam('min-resolution',arg.minResolution,'dppx"'));
+        mas.push(getParam('min-resolution',arg.minResolution,'dppx'));
     }
     if(typeof arg.maxResolution !== 'undefined'){
-        mas.push(getParam('max-resolution',arg.maxResolution,'dppx"'));
+        mas.push(getParam('max-resolution',arg.maxResolution,'dppx'));
     }
 
     let query: string = joinParam(mas);
     return query;
 }
-export interface fun {
+export interface Fun {
     (matches: boolean): React.ReactNode;
 };
-export interface MediaQueryProps{
-    children: React.ReactNode | fun;
-    minWidth?: `${number}px` | number;
-    maxWidth?: `${number}px` | number;
-    orientation?: 'portrait'|'landscape';
-    minResolution?: `${number}dppx` | number;
-    maxResolution?: `${number}dppx` | number;
+export interface MediaQueryProps extends GetQueryProps{
+    children: React.ReactNode | Fun;
 }
 const MediaQuery:FC<MediaQueryProps> = ({children,minWidth,maxWidth,orientation,minResolution,maxResolution}) => {
 

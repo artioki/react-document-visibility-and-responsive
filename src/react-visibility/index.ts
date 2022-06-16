@@ -1,1 +1,1 @@
-export {default as useDocumentVisibility} from './UseDocumentVisibility';
+export {default as useDocumentVisibility} from './useDocumentVisibility';
