@@ -1,8 +1,15 @@
 import { useState,useEffect } from 'react';
 import useDocumentVisibilityType from './useDocumentVisibilityType';
 
+function getDocumentHiddenBack() {
+  if (typeof document === "undefined") {
+    return true;
+  }
+  useDocumentVisibilityType.getIsDocumentHidden()
+}
+
 const useDocumentVisibility = () => {
-  const [Visible, setIsVisible] = useState(false);//useDocumentVisibilityType.getIsDocumentHidden()
+  const [Visible, setIsVisible] = useState(getDocumentHiddenBack());//useDocumentVisibilityType.getIsDocumentHidden()
   const [count, setcount] = useState(0);
   const [Callbacks, setCallbacks] = useState<(() => void)[]>([]);
 
