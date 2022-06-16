@@ -1,16 +1,16 @@
 import { useState, useEffect, useMemo} from 'react';
 
 
-export interface useMediaQueryProps{
+export interface UseMediaQueryProps{
   query: string;
 }
-export interface screenTestProps {
+export interface ScreenTestProps {
   matches: boolean;
 }
-const useMediaQuery = ({query}:useMediaQueryProps) =>{
-  const mql = useMemo(() => { return window.matchMedia(query); },[query]);
+const useMediaQuery = ({query}:UseMediaQueryProps) =>{
+  const mql = useMemo(() =>  window.matchMedia(query) ,[query]);
   const [Visible, setVisible] = useState(false);
-  function screenTest(e:screenTestProps) {
+  function screenTest(e:ScreenTestProps) {
   if (e.matches) {
       /* менее или равно */
       setVisible(true);
@@ -25,7 +25,7 @@ const useMediaQuery = ({query}:useMediaQueryProps) =>{
       return () => {
           mql.removeEventListener('change', screenTest);
       };
-    },[mql]);
+    },[query]);
     return Visible;
 };
 
