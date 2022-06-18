@@ -45,11 +45,11 @@ function getQuery(arg: GetQueryProps) {
     let query: string = joinParam(mas);
     return query;
 }
-export interface Fun {
+export interface callBackComponent {
     (matches: boolean): React.ReactNode;
 };
 export interface MediaQueryProps extends GetQueryProps{
-    children: React.ReactNode | Fun;
+    children: React.ReactNode | callBackComponent;
 }
 const MediaQuery:FC<MediaQueryProps> = ({children,minWidth,maxWidth,orientation,minResolution,maxResolution}) => {
 

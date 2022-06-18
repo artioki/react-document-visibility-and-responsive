@@ -9,9 +9,9 @@ function getDocumentHiddenBack() {
 }
 
 const useDocumentVisibility = () => {
-  const [Visible, setIsVisible] = useState(getDocumentHiddenBack());//useDocumentVisibilityType.getIsDocumentHidden()
+  const [visible, setIsVisible] = useState(getDocumentHiddenBack());//useDocumentVisibilityType.getIsDocumentHidden()
   const [count, setcount] = useState(0);
-  const [Callbacks, setCallbacks] = useState<(() => void)[]>([]);
+  const [сallbacks, setCallbacks] = useState<(() => void)[]>([]);
 
   const onVisibilityChangeAll = () => {
     if(useDocumentVisibilityType.getIsDocumentHidden() === false){
@@ -34,12 +34,8 @@ const useDocumentVisibility = () => {
     const visibilityChange = useDocumentVisibilityType.getBrowserVisibilityProp();
     document.addEventListener(visibilityChange, onVisibilityChangeAll,false);//visibilityChange, fun, false
     return () => {
-      Callbacks.forEach(element => {
+      сallbacks.forEach(element => {
         element();
-      });
-      setCallbacks(state => {
-        state.length = 0;
-        return state;
       });
       document.removeEventListener(visibilityChange, onVisibilityChangeAll);
     };
@@ -47,7 +43,7 @@ const useDocumentVisibility = () => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return { count, Visible, onVisibilityChange};
+  return { count, Visible: visible, onVisibilityChange};
 };
 
 export default useDocumentVisibility;
