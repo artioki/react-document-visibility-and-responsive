@@ -9,13 +9,11 @@ export interface ScreenTestProps {
 }
 const useMediaQuery = ({query}:UseMediaQueryProps) =>{
   const mql = useMemo(() =>  window.matchMedia(query) ,[query]);
-  const [Visible, setVisible] = useState(false);
+  const [visible, setVisible] = useState(false);
   function screenTest(e:ScreenTestProps) {
   if (e.matches) {
-      /* менее или равно */
       setVisible(true);
     } else {
-      /* более */
       setVisible(false);
     }
   }
@@ -26,7 +24,7 @@ const useMediaQuery = ({query}:UseMediaQueryProps) =>{
           mql.removeEventListener('change', screenTest);
       };
     },[query]);
-    return Visible;
+    return visible;
 };
 
 export default useMediaQuery;

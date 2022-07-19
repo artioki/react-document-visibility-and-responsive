@@ -1,4 +1,4 @@
-import { useState,useEffect } from 'react';
+import { useState,useEffect, useRef } from 'react';
 import useDocumentVisibilityType from './useDocumentVisibilityType';
 
 function getDocumentHiddenBack() {
@@ -11,7 +11,7 @@ function getDocumentHiddenBack() {
 const useDocumentVisibility = () => {
   const [visible, setIsVisible] = useState(getDocumentHiddenBack());//useDocumentVisibilityType.getIsDocumentHidden()
   const [count, setcount] = useState(0);
-  const [сallbacks, setCallbacks] = useState<(() => void)[]>([]);
+  const Callbacks = useRef<(() => void)[]>([]);
 
   const onVisibilityChangeAll = () => {
     if(useDocumentVisibilityType.getIsDocumentHidden() === false){
@@ -23,27 +23,25 @@ const useDocumentVisibility = () => {
   const onVisibilityChange = (fun: (isVisible: boolean) => void) => {
     const visibilityChange = useDocumentVisibilityType.getBrowserVisibilityProp();
     const event = (() => fun(useDocumentVisibilityType.getIsDocumentHidden()));
-    document.addEventListener(visibilityChange, event,false);//visibilityChange, fun, false
-    setCallbacks(state => {
-      state.push(() => document.removeEventListener(visibilityChange, event));
-      return state;
-    });
+    document.addEventListener(visibilityChange, event, false);
+    Callbacks.current.push(() => document.removeEventListener(visibilityChange, event));
+
   };
 
   useEffect(() => {
     const visibilityChange = useDocumentVisibilityType.getBrowserVisibilityProp();
-    document.addEventListener(visibilityChange, onVisibilityChangeAll,false);//visibilityChange, fun, false
+    document.addEventListener(visibilityChange, onVisibilityChangeAll, false);
+    Callbacks.current.push(() => document.removeEventListener(visibilityChange, onVisibilityChangeAll));
+    const cleanCallbacks = Callbacks.current;
     return () => {
-      сallbacks.forEach(element => {
+      cleanCallbacks.forEach(element => {
         element();
       });
-      document.removeEventListener(visibilityChange, onVisibilityChangeAll);
+      cleanCallbacks.length = 0;
     };
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return { count, Visible: visible, onVisibilityChange};
+  return { count,  visible, onVisibilityChange};
 };
 
 export default useDocumentVisibility;
