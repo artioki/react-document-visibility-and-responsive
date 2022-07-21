@@ -1,42 +1,37 @@
 import { useState,useEffect, useRef } from 'react';
-import useDocumentVisibilityType from './useDocumentVisibilityType';
 
-function getDocumentHiddenBack() {
+function getDocumentVisibility() {
   if (typeof document === "undefined") {
     return true;
   }
-  useDocumentVisibilityType.getIsDocumentHidden()
+  return !document.hidden;
 }
 
 const useDocumentVisibility = () => {
-  const [visible, setIsVisible] = useState(getDocumentHiddenBack());//useDocumentVisibilityType.getIsDocumentHidden()
+  const [visible, setIsVisible] = useState(getDocumentVisibility());
   const [count, setcount] = useState(0);
-  const Callbacks = useRef<(() => void)[]>([]);
+  const callbacks = useRef<(() => void)[]>([]);
 
   const onVisibilityChangeAll = () => {
-    if(useDocumentVisibilityType.getIsDocumentHidden() === false){
+    if(getDocumentVisibility() === false){
         setcount(count => count + 1);
     }
-    setIsVisible(useDocumentVisibilityType.getIsDocumentHidden());
+    setIsVisible(getDocumentVisibility());
+    callbacks.current.forEach(element => {
+      element();
+    });
   };
 
-  const onVisibilityChange = (fun: (isVisible: boolean) => void) => {
-    const visibilityChange = useDocumentVisibilityType.getBrowserVisibilityProp();
-    const event = (() => fun(useDocumentVisibilityType.getIsDocumentHidden()));
-    document.addEventListener(visibilityChange, event, false);
-    Callbacks.current.push(() => document.removeEventListener(visibilityChange, event));
-
+  const onVisibilityChange = (callback: (isVisible: boolean) => void) => {
+    const event = (() => callback(getDocumentVisibility()));
+    callbacks.current.push(() => event());
   };
 
   useEffect(() => {
-    const visibilityChange = useDocumentVisibilityType.getBrowserVisibilityProp();
-    document.addEventListener(visibilityChange, onVisibilityChangeAll, false);
-    Callbacks.current.push(() => document.removeEventListener(visibilityChange, onVisibilityChangeAll));
-    const cleanCallbacks = Callbacks.current;
+    document.addEventListener('visibilitychange', onVisibilityChangeAll, false);
+    const cleanCallbacks = callbacks.current;
     return () => {
-      cleanCallbacks.forEach(element => {
-        element();
-      });
+      document.removeEventListener('visibilitychange', onVisibilityChangeAll);
       cleanCallbacks.length = 0;
     };
   }, []);

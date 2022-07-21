@@ -4,26 +4,22 @@ import { useState, useEffect, useMemo} from 'react';
 export interface UseMediaQueryProps{
   query: string;
 }
-export interface ScreenTestProps {
-  matches: boolean;
-}
+
 const useMediaQuery = ({query}:UseMediaQueryProps) =>{
   const mql = useMemo(() =>  window.matchMedia(query) ,[query]);
   const [visible, setVisible] = useState(false);
-  function screenTest(e:ScreenTestProps) {
-  if (e.matches) {
-      setVisible(true);
-    } else {
-      setVisible(false);
-    }
+
+  function OnChange(ev: MediaQueryListEvent) {
+    setVisible(ev.matches);
   }
+
   useEffect(() => {
       setVisible(mql.matches);
-      mql.addEventListener('change', screenTest);
+      mql.addEventListener('change', OnChange);
       return () => {
-          mql.removeEventListener('change', screenTest);
+          mql.removeEventListener('change', OnChange);
       };
-    },[query]);
+    },[mql]);
     return visible;
 };
 
