@@ -1,6 +1,6 @@
+import React, { FC, useMemo} from 'react';
+import useMediaQuery from './useMediaQuery';
 
-import React, {useEffect, FC} from 'react';
-import useMediaQuery from './UseMediaQuery';
 export function getParam(type:string,value:number|string,form?:string){
     if(typeof value === 'number'){
         return `(${type}: ${value}${form?form:''})`;
@@ -16,48 +16,48 @@ export function joinParam(mas:string[]){
 
 }
 
-
-
-export interface fun {
-    (matches: any): React.ReactNode;
-};
-export interface MediaQueryProps{
-    children: React.ReactNode|fun;
-    minWidth?:string|number;
-    maxWidth?:string|number;
-    orientation?:string;
-    minResolution?:string|number;
-    maxResolution?:string|number;
+export interface GetQueryProps{
+    minWidth?: `${number}px` | number;
+    maxWidth?: `${number}px` | number;
+    orientation?: 'portrait'|'landscape';
+    minResolution?: `${number}dppx` | number;
+    maxResolution?: `${number}dppx` | number;
 }
-
-const MediaQuery:FC<MediaQueryProps> = ({children,minWidth,maxWidth,orientation,minResolution,maxResolution}) => {
+function getQuery(arg: GetQueryProps) {
     const mas: string[] = [];
 
-    if(typeof minWidth !== 'undefined'){
-        mas.push(getParam('min-width',minWidth,'px'));
+    if(typeof arg.minWidth !== 'undefined'){
+        mas.push(getParam('min-width',arg.minWidth,'px'));
     }
-    if(typeof maxWidth !== 'undefined'){
-        mas.push(getParam('max-width',maxWidth,'px'));
+    if(typeof arg.maxWidth !== 'undefined'){
+        mas.push(getParam('max-width',arg.maxWidth,'px'));
     }
-    if(typeof orientation !== 'undefined'){
-        mas.push(getParam('orientation',orientation));
+    if(typeof arg.orientation !== 'undefined'){
+        mas.push(getParam('orientation',arg.orientation));
     }
-    if(typeof minResolution !== 'undefined'){
-        mas.push(getParam('min-resolution',minResolution,'dppx"'));
+    if(typeof arg.minResolution !== 'undefined'){
+        mas.push(getParam('min-resolution',arg.minResolution,'dppx'));
     }
-    if(typeof maxResolution !== 'undefined'){
-        mas.push(getParam('max-resolution',maxResolution,'dppx"'));
+    if(typeof arg.maxResolution !== 'undefined'){
+        mas.push(getParam('max-resolution',arg.maxResolution,'dppx'));
     }
 
-    const query:string = joinParam(mas);
+    let query: string = joinParam(mas);
+    return query;
+}
+export interface callBackComponent {
+    (matches: boolean): React.ReactNode;
+};
+export interface MediaQueryProps extends GetQueryProps{
+    children: React.ReactNode | callBackComponent;
+}
+const MediaQuery:FC<MediaQueryProps> = ({children,minWidth,maxWidth,orientation,minResolution,maxResolution}) => {
 
+    const query = useMemo(() => getQuery({ minWidth, maxWidth, orientation, minResolution, maxResolution }),
+        [minWidth, maxWidth, orientation, minResolution, maxResolution]);
     const isDesktopOrLaptop = useMediaQuery({
         query,
     });
-
-    useEffect(() => {
-    }, [isDesktopOrLaptop]);
-
 
     return(
         <>
@@ -66,7 +66,7 @@ const MediaQuery:FC<MediaQueryProps> = ({children,minWidth,maxWidth,orientation,
             ? children(isDesktopOrLaptop)
             : isDesktopOrLaptop
                 ? children
-                : ''
+                : null
         }
         </>
     );
